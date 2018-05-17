@@ -30,22 +30,28 @@ class App extends React.Component {
 
   render() {
     if(! this.state.data) return <p>loading...</p>
+    let {meta, objects} = this.state.data
 
     let next = (e) => {
-      this.loadPage(this.state.data.meta.next)
+      this.loadPage(meta.next)
+    }
+
+    let previous = (e) => {
+      this.loadPage(meta.previous)
     }
 
     return (
       <div>
         <ul>
-          {this.state.data.objects.map((car) => {
+          {objects.map((car) => {
             return (
               <li key={car.id}>{car.name}</li>
             )
           })}
         </ul>
         <p>
-          <button onClick={next}>next</button>
+          {meta.previous && <button onClick={previous}>previous</button>}
+          {meta.next && <button onClick={next}>next</button>}
         </p>
       </div>
     )
