@@ -70,8 +70,10 @@ class App extends React.Component {
       <div>
         <table>
           <thead>
-            <th>name</th>
-            {dataFields.map((field) => <th>{field}</th>)}
+            <tr>
+              <th>name</th>
+              {dataFields.map((field) => <th key={field}>{field}</th>)}
+            </tr>
           </thead>
           <tbody>
             {objects.map((car) => {
@@ -82,7 +84,7 @@ class App extends React.Component {
                       {car.name}
                     </a>
                   </th>
-                  {dataFields.map((field) => <td>{car[field]}</td>)}
+                  {dataFields.map((field) => <td key={field}>{car[field]}</td>)}
                 </tr>
               )
             })}
