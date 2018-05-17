@@ -11,6 +11,17 @@ html, body, #app { margin: 0; height: 100%; }
 <div id="app"></div>
 
 <script type="text/babel">
+const CAR_FIELDS = [
+  "acceleration",
+  "cylinders",
+  "displacement",
+  "horsepower",
+  "mpg",
+  "name",
+  "weight",
+  "year",
+]
+
 class App extends React.Component {
 
   constructor() {
@@ -31,6 +42,7 @@ class App extends React.Component {
   render() {
     if(! this.state.data) return <p>loading...</p>
     let {meta, objects} = this.state.data
+    let car = this.state.car
 
     let next = (e) => {
       this.loadPage(meta.next)
@@ -40,12 +52,23 @@ class App extends React.Component {
       this.loadPage(meta.previous)
     }
 
+    let editCallback= (car) => (
+      (e) => {
+        e.preventDefault()
+        this.setState({car})
+      }
+    )
+
     return (
       <div>
         <ul>
           {objects.map((car) => {
             return (
-              <li key={car.id}>{car.name}</li>
+              <li key={car.id}>
+                <a href="#" onClick={editCallback(car)}>
+                  {car.name}
+                </a>
+              </li>
             )
           })}
         </ul>
@@ -53,7 +76,33 @@ class App extends React.Component {
           {meta.previous && <button onClick={previous}>previous</button>}
           {meta.next && <button onClick={next}>next</button>}
         </p>
+        {car && <Edit car={car} />}
       </div>
+    )
+  }
+}
+
+class Edit extends React.Component {
+  render() {
+    let {car} = this.props
+
+    let save = (e) => {
+      e.preventDefault()
+      let data = {}
+      CAR_FIELDS.forEach((field) => { data[field] = this.refs[field].value })
+      console.log(data)
+    }
+
+    return (
+      <form onSubmit={save}>
+        {CAR_FIELDS.map((field) => (
+          <div key={field}>
+            <label htmlFor={`edit-${field}`}>{field}</label>
+            <input id={`edit-${field}`} ref={field} defaultValue={car[field]} />
+          </div>
+        ))}
+        <button type="submit">save</button>
+      </form>
     )
   }
 }
