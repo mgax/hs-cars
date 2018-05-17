@@ -64,19 +64,30 @@ class App extends React.Component {
       this.loadPage(this.state.url)
     }
 
+    let dataFields = CAR_FIELDS.filter((f) => f != 'name')
+
     return (
       <div>
-        <ul>
-          {objects.map((car) => {
-            return (
-              <li key={car.id}>
-                <a href="#" onClick={editCallback(car)}>
-                  {car.name}
-                </a>
-              </li>
-            )
-          })}
-        </ul>
+        <table>
+          <thead>
+            <th>name</th>
+            {dataFields.map((field) => <th>{field}</th>)}
+          </thead>
+          <tbody>
+            {objects.map((car) => {
+              return (
+                <tr key={car.id}>
+                  <th>
+                    <a href="#" onClick={editCallback(car)}>
+                      {car.name}
+                    </a>
+                  </th>
+                  {dataFields.map((field) => <td>{car[field]}</td>)}
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
         <p>
           {meta.previous && <button onClick={previous}>previous</button>}
           {meta.next && <button onClick={next}>next</button>}
