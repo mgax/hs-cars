@@ -1,17 +1,49 @@
 <!doctype html>
 <meta charset="utf8">
+<style>
+html, body, #app { margin: 0; height: 100%; }
+</style>
 <body>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
 
+<div id="app"></div>
+
 <script type="text/babel">
 class App extends React.Component {
 
+  constructor() {
+    super()
+    this.state = {}
+  }
+
+  componentDidMount() {
+    this.loadPage();
+  }
+
+  async loadPage() {
+    let resp = await fetch('/api/v1/car/?format=json')
+    let data = await resp.json()
+    this.setState({data})
+  }
+
   render() {
-    return <p>app</p>
+    if(! this.state.data) return <p>loading...</p>
+
+    return (
+      <div>
+        <ul>
+          {this.state.data.objects.map((car) => {
+            return (
+              <li key={car.id}>{car.name}</li>
+            )
+          })}
+        </ul>
+      </div>
+    )
   }
 }
 
-ReactDOM.render(<App/>, document.querySelector('body'))
+ReactDOM.render(<App/>, document.querySelector('#app'))
 </script>
