@@ -94,7 +94,7 @@ class App extends React.Component {
           {meta.previous && <button onClick={previous}>previous</button>}
           {meta.next && <button onClick={next}>next</button>}
         </p>
-        {car && <Edit car={car} onSaved={reload} />}
+        {car && <Edit key={car.id} car={car} onSaved={reload} />}
       </div>
     )
   }
