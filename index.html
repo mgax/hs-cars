@@ -36,7 +36,7 @@ class App extends React.Component {
   async loadPage(url) {
     let resp = await fetch(url)
     let data = await resp.json()
-    this.setState({data})
+    this.setState({url, data})
   }
 
   render() {
@@ -59,6 +59,11 @@ class App extends React.Component {
       }
     )
 
+    let reload = () => {
+      this.setState({car: null})
+      this.loadPage(this.state.url)
+    }
+
     return (
       <div>
         <ul>
@@ -76,7 +81,7 @@ class App extends React.Component {
           {meta.previous && <button onClick={previous}>previous</button>}
           {meta.next && <button onClick={next}>next</button>}
         </p>
-        {car && <Edit car={car} />}
+        {car && <Edit car={car} onSaved={reload} />}
       </div>
     )
   }
@@ -85,12 +90,27 @@ class App extends React.Component {
 class Edit extends React.Component {
   render() {
     let {car} = this.props
+    let {error} = this.state || {}
 
-    let save = (e) => {
+    let save = async (e) => {
       e.preventDefault()
       let data = {}
       CAR_FIELDS.forEach((field) => { data[field] = this.refs[field].value })
-      console.log(data)
+      let resp = await fetch(car.resource_uri, {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+      })
+      if(resp.status == 200) {
+        if(this.props.onSaved) this.props.onSaved()
+      }
+      else {
+        let body = await resp.json()
+        this.setState({error: body.error_message})
+      }
     }
 
     return (
@@ -101,6 +121,7 @@ class Edit extends React.Component {
             <input id={`edit-${field}`} ref={field} defaultValue={car[field]} />
           </div>
         ))}
+        {error && <p>error: {error}</p>}
         <button type="submit">save</button>
       </form>
     )
